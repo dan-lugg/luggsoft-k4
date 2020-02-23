@@ -1,0 +1,6 @@
+dependencies {
+    implementation(
+            "org.jetbrains.kotlin:kotlin-scripting-jsr223-embeddable",
+            project(":k4-core"),
+    )
+}
