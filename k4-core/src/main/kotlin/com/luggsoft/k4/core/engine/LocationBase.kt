@@ -5,3 +5,6 @@ abstract class LocationBase(
     final override val startIndex: Int,
     final override val untilIndex: Int
 ) : Location
+{
+    override fun toString(): String = """${this.name}@${this.startIndex}:${this.untilIndex}"""
+}

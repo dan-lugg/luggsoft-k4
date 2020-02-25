@@ -1,8 +1,11 @@
 rootProject.name = "k4"
 
 include(
+        "common",
         "k4-cli",
         "k4-core",
+        "k4-example",
         "k4-lang-groovy",
         "k4-lang-kotlin",
 )
+

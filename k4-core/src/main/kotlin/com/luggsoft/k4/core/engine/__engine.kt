@@ -1,4 +1,7 @@
 package com.luggsoft.k4.core.engine
 
-fun main(): Unit = TODO()
+import com.luggsoft.k4.core.engine.tokenizers.TokenizerSettings
 
+data class EngineSettings(
+    val tokenizerSettings: TokenizerSettings = TokenizerSettings.Default
+)

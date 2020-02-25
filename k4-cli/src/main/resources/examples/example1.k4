@@ -1,0 +1,34 @@
+<#*
+    Name: Example
+    Author: Dan Lugg
+    Description: Example template code
+#>
+
+<#@ template
+    key1="foo"
+    key2="bar"
+#>
+
+<#!
+    val names = listOf(
+        "Foo",
+        "Bar",
+        "Qux",
+        "<#= Funny Name #>"
+    )
+#>
+
+<#! codeBuilder.indented { codeBuilder -> #>
+
+Hello world!
+
+<#! for (name in names) { #><#= "Test" #>
+
+<#* This is the greeting code #>
+Hello, how are you doing today, <#= name #>?
+
+<#! } #>
+
+<#! } #>
+
+Goodbye world!

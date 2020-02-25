@@ -2,7 +2,5 @@ package com.luggsoft.k4.core
 
 interface Template
 {
-    fun render(): String
+    fun render(model: Any? = null): String
 }
-
-
