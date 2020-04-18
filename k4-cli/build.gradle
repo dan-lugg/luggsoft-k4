@@ -1,8 +1,8 @@
 dependencies {
     implementation(
+            "info.picocli:picocli-spring-boot-starter:4.2.0",
             "info.picocli:picocli:4.2.0",
             project(":k4-core"),
-            project(":k4-lang-groovy"),
-            project(":k4-lang-kotlin"),
+            project(":k4-scaffolding"),
     )
 }

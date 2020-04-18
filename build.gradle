@@ -23,9 +23,34 @@ buildscript {
     }
 }
 
+apply plugin: "java"
+apply plugin: "maven-publish"
+apply plugin: "org.jetbrains.dokka"
+
 allprojects {
     group 'com.luggsoft.k4'
     version '1.0-SNAPSHOT'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/dokka"
+        subProjects = [
+                "k4-cli",
+                "k4-core",
+                "k4-example",
+        ]
+
+        configuration {
+            includes = [
+                    "README.md",
+            ]
+        }
+    }
 }
 
 subprojects {
@@ -33,17 +58,13 @@ subprojects {
     apply plugin: "kotlin"
     apply plugin: "kotlin-allopen"
     apply plugin: "kotlin-noarg"
-    apply plugin: "org.jetbrains.dokka"
     apply plugin: "org.jetbrains.kotlin.jvm"
 
     sourceCompatibility = "1.8"
 
-    repositories {
-        mavenCentral()
-    }
-
     dependencies {
         api(
+                "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions['jackson']}",
                 "com.fasterxml.jackson.module:jackson-module-kotlin:${versions['jackson']}",
                 "org.apache.logging.log4j:log4j-api:2.13.0",
                 "org.apache.logging.log4j:log4j-core:2.13.0",
@@ -52,7 +73,7 @@ subprojects {
         )
 
         testImplementation(
-                "junit:junit:4.12"
+                "org.junit.jupiter:junit-jupiter:5.6.0",
         )
     }
 
@@ -65,10 +86,28 @@ subprojects {
     }
 
     test {
-        useJUnit()
+        useJUnitPlatform()
 
         filter {
             includeTestsMatching "*Test"
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/luggsoft/k4")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_PASSWORD")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from components.java
         }
     }
 }

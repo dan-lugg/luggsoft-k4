@@ -1,7 +1,7 @@
 package com.luggsoft.k4.core.engine.tokenizers.tokens
 
 import com.luggsoft.k4.core.Source
-import com.luggsoft.k4.core.engine.DefaultLocation
+import com.luggsoft.k4.core.engine.Location
 import com.luggsoft.k4.core.engine.tokenizers.TokenizerSettings
 
 class TextTokenizerState(
@@ -24,6 +24,7 @@ class TextTokenizerState(
                 {
                     '!' -> CodeTokenizerState(this.tokenizerSettings)
                     '=' -> EchoTokenizerState(this.tokenizerSettings)
+                    '+' -> BodyTokenizerState(this.tokenizerSettings)
                     '@' -> InfoTokenizerState(this.tokenizerSettings)
                     '*' -> NoteTokenizerState(this.tokenizerSettings)
                     else -> UnknownTokenizerState
@@ -31,7 +32,7 @@ class TextTokenizerState(
                 tokenizerStateSetter(tokenProviderState)
                 return TextToken(
                     text = stringBuffer.removeSuffix("<#").toString(),
-                    location = DefaultLocation(
+                    location = Location(
                         name = source.name,
                         startIndex = startIndex,
                         untilIndex = index
@@ -41,7 +42,7 @@ class TextTokenizerState(
         }
         return TextToken(
             text = stringBuffer.toString(),
-            location = DefaultLocation(
+            location = Location(
                 name = source.name,
                 startIndex = startIndex,
                 untilIndex = index

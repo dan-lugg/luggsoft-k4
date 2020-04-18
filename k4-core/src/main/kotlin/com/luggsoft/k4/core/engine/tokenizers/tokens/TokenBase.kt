@@ -10,9 +10,30 @@ abstract class TokenBase(
     private val escapedContent: String
         get() = TokenBase.objectMapper.writeValueAsString(this.content)
 
-    abstract val content: String
+    final override fun toString(): String = """${this::class.java.simpleName}[${this.location}]=${this.escapedContent}"""
 
-    override fun toString(): String = """${this::class.java.simpleName}[${this.location}]=${this.escapedContent}"""
+    final override fun equals(other: Any?): Boolean
+    {
+        if (other is Token)
+        {
+            if (this::class != other::class)
+            {
+                println("not token type")
+                return false
+            }
+
+            println("this.content = ${this.content}")
+            println("that.content = ${other.content}")
+
+            println("this.location = ${this.location}")
+            println("that.location = ${other.location}")
+
+            return (this.content == other.content) && (this.location == other.location)
+        }
+
+        println("not token")
+        return false
+    }
 
     private companion object
     {

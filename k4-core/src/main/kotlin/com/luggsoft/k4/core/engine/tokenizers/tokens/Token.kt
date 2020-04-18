@@ -5,4 +5,5 @@ import com.luggsoft.k4.core.engine.Location
 interface Token
 {
     val location: Location
+    val content: String
 }

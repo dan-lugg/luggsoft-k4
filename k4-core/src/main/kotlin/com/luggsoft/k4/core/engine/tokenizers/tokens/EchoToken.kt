@@ -4,10 +4,8 @@ import com.luggsoft.k4.core.engine.Location
 
 class EchoToken(
     val echo: String,
-    location: Location
-) : TokenBase(
-    location = location
-)
+    override val location: Location
+) : Token
 {
     override val content: String
         get() = this.echo

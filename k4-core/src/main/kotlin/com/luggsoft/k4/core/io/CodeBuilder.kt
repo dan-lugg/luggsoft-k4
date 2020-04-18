@@ -10,9 +10,15 @@ class CodeBuilder(
     private val indentLevel: Int = indentLevel.coerceAtLeast(0)
 
     override val length: Int
-        get() = this.stringBuffer.length
+        get()
+        {
+            return this.stringBuffer.length
+        }
 
-    override fun toString(): String = this.stringBuffer.toString()
+    override fun toString(): String
+    {
+        return this.stringBuffer.toString()
+    }
 
     override fun append(charSequence: CharSequence?): CodeBuilder
     {
@@ -47,56 +53,74 @@ class CodeBuilder(
         return this
     }
 
-    override fun get(index: Int): Char = this.stringBuffer
-        .get(index)
-
-    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = this.stringBuffer
-        .subSequence(startIndex, endIndex)
-
-    fun appendln(): CodeBuilder = this
-        .append(this.lineSeparator)
-
-    fun appendln(charSequence: CharSequence?): CodeBuilder = this
-        .append(charSequence)
-        .append(this.lineSeparator)
-
-    fun appendln(charSequence: CharSequence?, start: Int, end: Int): CodeBuilder = this
-        .append(charSequence, start, end)
-        .append(this.lineSeparator)
-
-    fun append(value: Any?): CodeBuilder = when (value)
+    override fun get(index: Int): Char
     {
-        null -> this
-        else -> value.toString().let(this::append)
+        return this.stringBuffer.get(index)
     }
 
-    fun appendln(value: Any?): CodeBuilder = when (value)
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence
     {
-        null -> this
-        else -> value.toString().let(this::appendln)
+        return this.stringBuffer.subSequence(startIndex, endIndex)
     }
 
-    fun indent(): CodeBuilder = CodeBuilder(
-        stringBuffer = this.stringBuffer,
-        indentLevel = this.indentLevel + 1,
-        lineSeparator = this.lineSeparator
-    )
+    fun appendln(): CodeBuilder
+    {
+        return this.append(this.lineSeparator)
+    }
 
-    fun dedent(): CodeBuilder = CodeBuilder(
-        stringBuffer = this.stringBuffer,
-        indentLevel = this.indentLevel - 1,
-        lineSeparator = this.lineSeparator
-    )
+    fun appendln(charSequence: CharSequence?): CodeBuilder
+    {
+        return this.append(charSequence).append(this.lineSeparator)
+    }
+
+    fun appendln(charSequence: CharSequence?, start: Int, end: Int): CodeBuilder
+    {
+        return this.append(charSequence, start, end).append(this.lineSeparator)
+    }
+
+    fun append(value: Any?): CodeBuilder
+    {
+        return when (value)
+        {
+            null -> this
+            else -> value.toString().let(this::append)
+        }
+    }
+
+    fun appendln(value: Any?): CodeBuilder
+    {
+        return when (value)
+        {
+            null -> this
+            else -> value.toString().let(this::appendln)
+        }
+    }
+
+    fun indent(): CodeBuilder
+    {
+        return CodeBuilder(
+            stringBuffer = this.stringBuffer,
+            indentLevel = this.indentLevel + 1,
+            lineSeparator = this.lineSeparator
+        )
+    }
+
+    fun dedent(): CodeBuilder
+    {
+        return CodeBuilder(
+            stringBuffer = this.stringBuffer,
+            indentLevel = this.indentLevel - 1,
+            lineSeparator = this.lineSeparator
+        )
+    }
 
     fun indented(block: (CodeBuilder) -> Unit): CodeBuilder
     {
-        this.indent().also(block)
-        return this
+        return this.indent().also(block)
     }
 
     fun dedented(block: (CodeBuilder) -> Unit): CodeBuilder
     {
-        this.dedent().also(block)
-        return this
+        return this.dedent().also(block)
     }
 }

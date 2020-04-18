@@ -3,9 +3,7 @@ package com.luggsoft.k4.core
 import com.luggsoft.common.logger
 import com.luggsoft.k4.core.io.CodeBuilder
 
-abstract class TemplateBase(
-    private val modelClass: Class<*>
-) : Template
+abstract class TemplateBase : Template
 {
     @Throws(TemplateException::class)
     final override fun render(model: Any?): String

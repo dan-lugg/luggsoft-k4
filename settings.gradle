@@ -5,7 +5,6 @@ include(
         "k4-cli",
         "k4-core",
         "k4-example",
-        "k4-lang-groovy",
-        "k4-lang-kotlin",
+        "k4-intellij",
+        "k4-scaffolding",
 )
-
