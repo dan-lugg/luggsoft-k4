@@ -49,20 +49,20 @@ class DefaultEvaluator(
             {
                 this.invocable.invokeFunction("render", codeBuilder, model)
             }
-            catch (exception: NoSuchMethodException)
+            catch (noSuchMethodException: NoSuchMethodException)
             {
                 val expectModelClass = script.modelClass
                 val actualModelClass = model!!::class
                 ("No render method defined for model class $actualModelClass, expected $expectModelClass").also { message ->
-                    this.logger.error(message, exception)
-                    throw EvaluatorException(message, exception)
+                    this.logger.error(message, noSuchMethodException)
+                    throw EvaluatorException(message, noSuchMethodException)
                 }
             }
-            catch (exception: ScriptException)
+            catch (scriptException: ScriptException)
             {
-                ("Failed to evaluate script, because ${exception.message} at ${exception.lineNumber}:${exception.columnNumber} in ${exception.fileName}").also { message ->
-                    this.logger.error(message, exception)
-                    throw EvaluatorException(message, exception)
+                ("Failed to evaluate script, because ${scriptException.message} at ${scriptException.lineNumber}:${scriptException.columnNumber} in ${scriptException.fileName}").also { message ->
+                    this.logger.error(message, scriptException)
+                    throw EvaluatorException(message, scriptException)
                 }
             }
         }

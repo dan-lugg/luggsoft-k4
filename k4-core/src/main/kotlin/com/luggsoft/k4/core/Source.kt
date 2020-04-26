@@ -1,6 +1,7 @@
 package com.luggsoft.k4.core
 
 import java.io.File
+import java.io.Reader
 import java.nio.charset.Charset
 
 /**
@@ -60,6 +61,18 @@ interface Source
         fun fromString(name: String, text: String): Source = DefaultSource(
             name = name,
             text = text
+        )
+
+        /**
+         * TODO
+         *
+         * @param name
+         * @param reader
+         * @return
+         */
+        fun fromReader(name: String, reader: Reader): Source = DefaultSource(
+            name = name,
+            text = reader.readText()
         )
     }
 }

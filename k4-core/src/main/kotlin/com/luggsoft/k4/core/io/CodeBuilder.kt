@@ -27,6 +27,7 @@ class CodeBuilder(
             val indent = this.indentString.repeat(this.indentLevel)
             this.stringBuffer.append(indent)
         }
+
         this.stringBuffer.append(charSequence)
         return this
     }
@@ -38,6 +39,7 @@ class CodeBuilder(
             val indent = this.indentString.repeat(this.indentLevel)
             this.stringBuffer.append(indent)
         }
+
         this.stringBuffer.append(charSequence, start, end)
         return this
     }
@@ -49,6 +51,7 @@ class CodeBuilder(
             val indent = this.indentString.repeat(this.indentLevel)
             this.stringBuffer.append(indent)
         }
+        
         this.stringBuffer.append(char)
         return this
     }

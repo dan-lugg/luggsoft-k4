@@ -34,6 +34,14 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/luggsoft/common")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_PASSWORD")
+            }
+        }
     }
 
     dokka {
@@ -66,6 +74,8 @@ subprojects {
         api(
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions['jackson']}",
                 "com.fasterxml.jackson.module:jackson-module-kotlin:${versions['jackson']}",
+                "com.luggsoft.common:common-commands:1.0-SNAPSHOT",
+                "com.luggsoft.common:common-util:1.0-SNAPSHOT",
                 "org.apache.logging.log4j:log4j-api:2.13.0",
                 "org.apache.logging.log4j:log4j-core:2.13.0",
                 "org.apache.logging.log4j:log4j-slf4j-impl:2.13.0",

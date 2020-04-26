@@ -77,7 +77,7 @@ class DefaultTokenizer(
             // return tokens
             return tokens
                 .sortedBy { token -> if (token is InfoToken) 1 else 0 }
-                .sortedBy { token -> if (token is BodyToken) 1 else 0 }
+                .sortedBy { token -> if (token is BodyToken) 0 else 1 }
         }
         catch (exception: Exception)
         {
