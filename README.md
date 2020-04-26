@@ -1,5 +1,3 @@
-![k4][img-k4]
-
 # K4
 
 [![CircleCI][img-circleci]][www-circleci]
