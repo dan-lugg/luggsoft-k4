@@ -2,6 +2,7 @@
 
 # K4, T4 for Kotlin
 
+[![Gradle Package][img-actions]][www-actions]
 [![License][img-license]][www-license]
 
 Welcome to **K4**, a from-scratch template engine inspired by .NET's [T4 (Text Template Transformation Toolkit)](https://github.com/mono/t4) engine.
@@ -57,6 +58,12 @@ TODO
 
 The MIT License (MIT). Please see the package [license file][www-license] for more information.
 
+[img-header]: assets/header.jpg
+
 [www-license]: LICENSE.md
+
 [img-license]: https://img.shields.io/badge/license-MIT-blue.svg
-[img-header]: assets/luggsoft-k4-t4-for-kotlin.jpg
+
+[img-actions]: https://github.com/dan-lugg/kt-common/actions/workflows/gradle-publish.yml/badge.svg
+
+[www-actions]: https://github.com/dan-lugg/kt-common/actions/workflows/gradle-publish.yml
