@@ -1,9 +1,31 @@
-rootProject.name = "k4"
+pluginManagement {
+    def kotlinVersion = "1.5.10"
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2"
+        }
+        maven {
+            url "https://repo.spring.io/milestone"
+        }
+    }
+
+    plugins {
+        id "io.spring.dependency-management" version "1.0.11.RELEASE"
+        id "java"
+        id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+        id "org.jetbrains.kotlin.plugin.allopen" version "$kotlinVersion"
+        id "org.jetbrains.kotlin.plugin.jpa" version "$kotlinVersion"
+        id "org.jetbrains.kotlin.plugin.noarg" version "$kotlinVersion"
+        id "org.jetbrains.kotlin.plugin.spring" version "$kotlinVersion"
+    }
+}
+
+rootProject.name = "kt-k4"
 
 include(
         "k4-cli",
         "k4-core",
         "k4-example",
-        "k4-intellij",
         "k4-scaffolding",
 )
