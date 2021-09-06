@@ -5,8 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.luggsoft.common.EMPTY_STRING
 import com.luggsoft.common.logger
 import com.luggsoft.common.singleIsInstance
-import com.luggsoft.k4.core.engine.generators.formatters.Formatter
-import com.luggsoft.k4.core.engine.generators.formatters.KtLintFormatter
 import com.luggsoft.k4.core.engine.tokenizers.tokens.BodyToken
 import com.luggsoft.k4.core.engine.tokenizers.tokens.CodeToken
 import com.luggsoft.k4.core.engine.tokenizers.tokens.EchoToken
@@ -20,7 +18,7 @@ import java.nio.ByteBuffer
 import java.util.*
 
 class DefaultGenerator(
-    private val formatter: Formatter
+    // private val formatter: Formatter
 ) : Generator
 {
     override fun generateScript(tokens: List<Token>): Script
@@ -87,7 +85,6 @@ class DefaultGenerator(
             return functionTokens.flatMap(this::getTokenCodeLines).joinToString(separator = "\n")
         }
 
-
         fun renderFunction(): String
         {
 
@@ -146,6 +143,6 @@ class DefaultGenerator(
     )
 
     object Instance : Generator by DefaultGenerator(
-        formatter = KtLintFormatter()
+        // formatter = KtLintFormatter()
     )
 }
