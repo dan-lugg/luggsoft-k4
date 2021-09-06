@@ -64,6 +64,6 @@ The MIT License (MIT). Please see the package [license file][www-license] for mo
 
 [img-license]: https://img.shields.io/badge/license-MIT-blue.svg
 
-[img-actions]: https://github.com/dan-lugg/kt-common/actions/workflows/gradle-publish.yml/badge.svg
+[img-actions]: https://github.com/dan-lugg/kt-k4/actions/workflows/gradle-publish.yml/badge.svg
 
-[www-actions]: https://github.com/dan-lugg/kt-common/actions/workflows/gradle-publish.yml
+[www-actions]: https://github.com/dan-lugg/kt-k4/actions/workflows/gradle-publish.yml
