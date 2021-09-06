@@ -4,7 +4,6 @@ import com.luggsoft.k4.core.Source
 import com.luggsoft.k4.core.engine.DefaultEngine
 import com.luggsoft.k4.core.engine.evaluators.DefaultEvaluator
 import com.luggsoft.k4.core.engine.generators.DefaultGenerator
-import com.luggsoft.k4.core.engine.generators.formatters.KtLintFormatter
 import com.luggsoft.k4.core.engine.tokenizers.DefaultTokenizer
 import com.luggsoft.k4.core.engine.tokenizers.TokenizerSettings
 import javax.script.ScriptEngineManager
@@ -20,7 +19,7 @@ object ExampleApplication
                 tokenizerSettings = TokenizerSettings.Default
             ),
             generator = DefaultGenerator(
-                formatter = KtLintFormatter()
+                // formatter = KtLintFormatter()
             ),
             evaluator = DefaultEvaluator(
                 scriptEngineManager = ScriptEngineManager()
