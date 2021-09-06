@@ -39,6 +39,12 @@ subprojects {
         exampleRuntime.extendsFrom testRuntime
     }
 
+    println(project.properties)
+    println(System.getenv())
+    println()
+    println()
+    println()
+
     repositories {
         mavenCentral()
         maven {
