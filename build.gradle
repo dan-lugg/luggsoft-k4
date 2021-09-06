@@ -52,11 +52,11 @@ subprojects {
                 url = uri(githubRepository)
                 credentials {
                     username = project.findProperty("gpr.user")
-                            ?: System.getenv("GITHUB_USERNAME")
                             ?: System.getenv("USERNAME")
+                            ?: System.getenv("GITHUB_USERNAME")
                     password = project.findProperty("gpr.key")
-                            ?: System.getenv("GITHUB_PASSWORD")
                             ?: System.getenv("TOKEN")
+                            ?: System.getenv("GITHUB_PASSWORD")
                 }
             }
         }
@@ -115,11 +115,11 @@ subprojects {
                 url = uri("https://maven.pkg.github.com/dan-lugg/kt-k4")
                 credentials {
                     username = project.findProperty("gpr.user")
-                            ?: System.getenv("GITHUB_USERNAME")
                             ?: System.getenv("USERNAME")
+                            ?: System.getenv("GITHUB_USERNAME")
                     password = project.findProperty("gpr.key")
-                            ?: System.getenv("GITHUB_PASSWORD")
                             ?: System.getenv("TOKEN")
+                            ?: System.getenv("GITHUB_PASSWORD")
                 }
             }
         }
