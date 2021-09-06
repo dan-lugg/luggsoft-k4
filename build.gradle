@@ -39,6 +39,9 @@ subprojects {
         exampleRuntime.extendsFrom testRuntime
     }
 
+    println("gpr.user=${project.findProperty("gpr.user")}")
+    println("GITHUB_USERNAME=${System.getenv("GITHUB_USERNAME")}")
+
     repositories {
         mavenCentral()
         maven {
