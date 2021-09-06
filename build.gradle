@@ -39,12 +39,6 @@ subprojects {
         exampleRuntime.extendsFrom testRuntime
     }
 
-    println(project.properties)
-    println(System.getenv())
-    println()
-    println()
-    println()
-
     repositories {
         mavenCentral()
         maven {
@@ -57,12 +51,8 @@ subprojects {
             maven {
                 url = uri(githubRepository)
                 credentials {
-                    username = project.findProperty("gpr.user")
-                            ?: System.getenv("USERNAME")
-                            ?: System.getenv("GITHUB_USERNAME")
-                    password = project.findProperty("gpr.key")
-                            ?: System.getenv("TOKEN")
-                            ?: System.getenv("GITHUB_PASSWORD")
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
                 }
             }
         }
@@ -120,12 +110,8 @@ subprojects {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/dan-lugg/kt-k4")
                 credentials {
-                    username = project.findProperty("gpr.user")
-                            ?: System.getenv("USERNAME")
-                            ?: System.getenv("GITHUB_USERNAME")
-                    password = project.findProperty("gpr.key")
-                            ?: System.getenv("TOKEN")
-                            ?: System.getenv("GITHUB_PASSWORD")
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_PASSWORD")
                 }
             }
         }
