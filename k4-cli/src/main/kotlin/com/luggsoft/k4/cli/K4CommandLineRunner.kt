@@ -1,10 +1,8 @@
 package com.luggsoft.k4.cli
 
 import com.luggsoft.k4.cli.commands.K4Command
-import com.luggsoft.k4.core.vx.DefaultEngineFacade
-import com.luggsoft.k4.core.vx.internal.generators.DefaultGenerator
-import com.luggsoft.k4.core.vx.EngineFacade
-import com.luggsoft.k4.core.vx.internal.tokenizers.DefaultTokenizer
+import com.luggsoft.k4.core.DefaultEngine
+import com.luggsoft.k4.core.Engine
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.ExitCodeGenerator
@@ -47,8 +45,5 @@ class K4Configuration
 {
     @Bean
     @Scope(BeanDefinition.SCOPE_SINGLETON)
-    fun engineFacade(): EngineFacade = DefaultEngineFacade(
-        tokenizer = DefaultTokenizer.Instance,
-        generator = DefaultGenerator.Instance,
-    )
+    fun engine(): Engine = DefaultEngine.Instance
 }

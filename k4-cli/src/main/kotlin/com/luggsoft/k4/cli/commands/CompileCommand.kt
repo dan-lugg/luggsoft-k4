@@ -4,15 +4,16 @@ import com.luggsoft.common.EMPTY_STRING
 import com.luggsoft.common.logger
 import com.luggsoft.k4.cli.helpers.SourceDeterminer
 import com.luggsoft.k4.cli.helpers.TargetDeterminer
-import com.luggsoft.k4.core.vx.EngineFacade
+import com.luggsoft.k4.core.Engine
 import org.springframework.stereotype.Component
+import java.io.StringWriter
 import picocli.CommandLine.Command as PicoCommand
 import picocli.CommandLine.Option as PicoOption
 
 @Component
 @PicoCommand(name = "compile")
 class CompileCommand(
-    private val engineFacade: EngineFacade,
+    private val engine: Engine,
     private val sourceDeterminer: SourceDeterminer,
     private val targetDeterminer: TargetDeterminer,
 ) : Command
@@ -29,14 +30,16 @@ class CompileCommand(
         {
             val source = this.sourceDeterminer.determineSource(this.sourceDescriptor)
             val target = this.targetDeterminer.determineTarget(this.targetDescriptor)
-            val template = this.engineFacade.compile(source)
-            val targetStringBuffer = StringBuffer()
-            template.render(
+            val template = this.engine.compile(source)
+            val targetStringBuffer = StringWriter()
+            template.execute(
                 model = null,
-                output = targetStringBuffer,
-                logger = this.logger,
+                templateWriter = targetStringBuffer,
+                templateLogger = this.logger,
             )
-            target.write(targetStringBuffer)
+            target.write(
+                charSequence = targetStringBuffer.toString(),
+            )
             return 0
         } catch (exception: Exception)
         {
