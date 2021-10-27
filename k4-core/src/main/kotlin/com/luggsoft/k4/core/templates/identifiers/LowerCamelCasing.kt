@@ -1,8 +1,8 @@
 package com.luggsoft.k4.core.templates.identifiers
 
 import com.luggsoft.common.EMPTY_STRING
-import com.luggsoft.common.head
-import com.luggsoft.common.tail
+import com.luggsoft.common.collections.head
+import com.luggsoft.common.collections.tail
 
 object LowerCamelCasing : Casing
 {

@@ -18,9 +18,7 @@ object ExampleApplication
             tokenizer = DefaultTokenizer(
                 tokenizerSettings = TokenizerSettings.Default
             ),
-            generator = DefaultGenerator(
-                // formatter = KtLintFormatter()
-            ),
+            generator = DefaultGenerator.Instance,
             evaluator = DefaultEvaluator(
                 scriptEngineManager = ScriptEngineManager()
             )

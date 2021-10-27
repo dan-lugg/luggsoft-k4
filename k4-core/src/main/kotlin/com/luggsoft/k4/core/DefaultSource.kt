@@ -1,6 +1,6 @@
 package com.luggsoft.k4.core
 
-import com.luggsoft.common.normalizeLineSeparators
+import com.luggsoft.common.text.normalizeLineSeparators
 
 class DefaultSource(
     override val name: String,

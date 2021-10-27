@@ -1,7 +1,7 @@
 package com.luggsoft.k4.core.engine.tokenizers.tokens
 
-import com.luggsoft.common.columnNumberAtIndex
-import com.luggsoft.common.lineNumberAtIndex
+import com.luggsoft.common.text.columnIndexAt
+import com.luggsoft.common.text.lineIndexAt
 import com.luggsoft.k4.core.Source
 import com.luggsoft.k4.core.engine.tokenizers.TokenizerSettings
 import com.luggsoft.k4.core.internal.OBJECT_MAPPER
@@ -91,8 +91,8 @@ abstract class TokenizerStateBase(
     protected fun getUnexpectedEOFTokenizerStateException(source: Source, startIndex: Int, untilIndex: Int): TokenizerStateException
     {
         val text = source.text.substring(startIndex, untilIndex)
-        val lineNumber = source.text.lineNumberAtIndex(untilIndex)
-        val columnNumber = source.text.columnNumberAtIndex(untilIndex)
+        val lineNumber = source.text.lineIndexAt(untilIndex)
+        val columnNumber = source.text.columnIndexAt(untilIndex)
         val message = "${source.name}:$lineNumber:$columnNumber, unexpected EOF in ${OBJECT_MAPPER.writeValueAsString(text)}"
         return TokenizerStateException(message)
     }

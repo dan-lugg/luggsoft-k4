@@ -1,7 +1,7 @@
 dependencies {
     implementation(
-            "info.picocli:picocli-spring-boot-starter:4.2.0",
-            "info.picocli:picocli:4.2.0",
+            'info.picocli:picocli-spring-boot-starter:4.6.1',
+            'info.picocli:picocli:4.6.1',
             project(":k4-core"),
             project(":k4-scaffolding"),
     )

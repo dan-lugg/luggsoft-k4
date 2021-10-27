@@ -1,3 +1,4 @@
+/*
 package com.luggsoft.k4.cli
 
 import org.springframework.boot.SpringApplication
@@ -19,3 +20,4 @@ open class K4CliApplication
         }
     }
 }
+*/
