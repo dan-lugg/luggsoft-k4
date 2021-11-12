@@ -8,7 +8,7 @@ interface TemplateLogger
 
     companion object
     {
-        fun createDefault(template: Template) = object : TemplateLogger
+        fun createDefault(template: Template<*>) = object : TemplateLogger
         {
             private val logger = LoggerFactory.getLogger(template::class.java)
 

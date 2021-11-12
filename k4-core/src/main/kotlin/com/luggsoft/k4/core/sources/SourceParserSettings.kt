@@ -19,6 +19,8 @@ class SourceParserSettings(
     companion object
     {
         fun createDefault(): SourceParserSettings = SourceParserSettings()
-            .enable(SourceParserFlags.SKIP_TAG_TRAILING_NEWLINES)
+            .enable(SourceParserFlags.TRIM_TEMPLATE_LEADING_WHITESPACE)
+            .enable(SourceParserFlags.TRIM_TEMPLATE_TRAILING_WHITESPACE)
+            .disable(SourceParserFlags.SKIP_TAG_TRAILING_NEWLINES)
     }
 }

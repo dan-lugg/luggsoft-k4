@@ -1,0 +1,16 @@
+<#@ modelType: "com.example.Foo" #>
+<#@ templateType: "com.example.Bar" #>
+<#
+    val x = 123
+    val y = 234
+#>
+<#= "This is what K4 looks like: " #>
+<#= """This is also what K4 looks like: """ #>
+Hello <#= model.name #>, what are you doing <#= model.date #>?
+<# if (x > y) { #>
+It appears that X (<#= x #>) is greater than Y (<#= y #>).
+
+<#@ include: "path/to/file.k4", model: x #>
+
+<# } #>
+Thanks for coming out!

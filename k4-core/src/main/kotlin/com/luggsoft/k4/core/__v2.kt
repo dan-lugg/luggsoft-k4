@@ -1,79 +1,100 @@
 package com.luggsoft.k4.core
 
-import com.luggsoft.k4.core.templates.kotlinEscape
+import com.luggsoft.k4.core.sources.DefaultSource
+import org.intellij.lang.annotations.Language
+import org.slf4j.LoggerFactory
+import java.io.StringWriter
 
-val content = """
+///
+
+///
+
+data class ModelX(val a: Int, val b: Int)
+
+data class ModelY(val a: String, val b: String)
+
+val sourceContent = """
 <#@
-model-type: com.luggsoft.k4.core.ExampleModel
+  model-type: com.luggsoft.k4.core.ModelY
 #>
-Raw line 1.
-<#= 123 #> 
-Raw line 2.
-<#! if (true) { #>
-<#*
-Some comments.
-More comments.
-#>
-Raw line 3.
-Hello <#= model.name #>! How are you doing today?
-You won ${'$'}DOLLARS!
-<#! } #>
-Raw line 4.
+<#= model.a #> + <#= model.b #> = <#= model.a + model.b #>
 """
 
-data class ExampleModel(
-    val name: String,
-)
+@Language("yaml")
+val modelYaml = """
+foo:
+  a: 123
+  b: 234
+bar:
+  a: 345
+  b: 456
+qux:
+  a: "Hello"
+  b: "World"
+"""
+
+@Language("K4")
+val eventK4 = """
+<#@ modelType: com.luggsoft.modelgen.EventDescriptor #>
+package com.example.models
+
+data class <#= model.name #>Event(
+    val id: UUID,
+    val at: Instance,
+    val data: <#= model.name #>EventData, 
+) : Event<<#= model.name #>EventData>
+
+data class <#= model.name #>EventData(
+<#! model.properties.forEach { property -> #>
+    val <#= property.name #>: <#= property.type #>,
+<#! } #>
+) : EventData
+
+"""
 
 fun main()
 {
-    /*
     val source = DefaultSource(
-        name = "test",
-        content = content.trimStart()
+        name = "example",
+        content = sourceContent.trimStart(),
     )
 
-    val engine = DefaultEngine(
-        sourceParser = DefaultSourceParser(
-            sourceParserSettings = SourceParserSettings()
-                .enable(SourceParserFlags.SKIP_TAG_TRAILING_NEWLINES),
-        ),
-        templateGenerator = DefaultTemplateGenerator(
-            objectMapper = jacksonObjectMapper(),
-            scriptEngineManager = ScriptEngineManager(),
-            templateBuilderSettings = TemplateBuilderSettings()
-                .enable(TemplateBuilderFlags.INCLUDE_COMMENTS_INLINE)
-                .enable(TemplateBuilderFlags.INCLUDE_COMMENTS_LOGGED),
+    val modelProvider = DefaultModelProvider(
+        modelNameMap = mapOf(
+            "foo" to ModelX(
+                a = 123,
+                b = 456,
+            ),
+            "bar" to ModelX(
+                a = 456,
+                b = 789,
+            ),
+            "qux" to ModelY(
+                a = "Goodbye",
+                b = "Universe",
+            )
         ),
     )
 
-    val writer = System.out.writer()
-    val template = engine.compile(
+    val writer = StringWriter()
+    val logger = LoggerFactory.getLogger("test")
+
+    DefaultEngine.Instance.execute(
         source = source,
+        modelProvider = modelProvider,
+        modelName = "qux",
+        writer = writer,
+        logger = logger,
     )
-
-    template.save(writer)
-
-    val exampleModels = ('A'..'Z').map { char ->
-        return@map ExampleModel(name = "$char")
-    }
-
-    for (exampleModel in exampleModels)
-    {
-        template.execute(
-            model = exampleModel,
-            writer = writer,
-        )
-    }
 
     writer.flush()
-    */
-    val x = """
-        asdf
-        "asdf"${'$'}asdf
-        asdf
-    """
-    x.kotlinEscape().also(::println)
-    "\n        asdf\n        \"asdf\"\$asdf\n        asdf\n"
+    writer.toString().trim().also(::println)
 }
 
+///
+
+/*
+1) Source to Segments
+2)
+
+*/

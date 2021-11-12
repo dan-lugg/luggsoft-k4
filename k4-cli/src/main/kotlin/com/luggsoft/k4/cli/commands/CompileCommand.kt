@@ -33,9 +33,10 @@ class CompileCommand(
             val template = this.engine.compile(source)
             val targetStringBuffer = StringWriter()
             template.execute(
-                model = null,
-                templateWriter = targetStringBuffer,
-                templateLogger = this.logger,
+                model = object
+                {},
+                writer = targetStringBuffer,
+                logger = this.logger,
             )
             target.write(
                 charSequence = targetStringBuffer.toString(),

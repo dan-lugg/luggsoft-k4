@@ -1,6 +1,7 @@
 package com.luggsoft.k4.core.sources
 
 import com.luggsoft.k4.core.sources.segments.CommentTagSegment
+import com.luggsoft.k4.core.sources.segments.IncludesTagSegment
 import com.luggsoft.k4.core.sources.segments.KotlinTagSegment
 import com.luggsoft.k4.core.sources.segments.Location
 import com.luggsoft.k4.core.sources.segments.MetaTagSegment
@@ -11,7 +12,7 @@ import com.luggsoft.k4.core.sources.segments.SegmentList
 import com.luggsoft.k4.core.sources.segments.TagSegmentBase
 
 class DefaultSourceParser(
-    private val tagSegmentReaders: List<TagSegmentReaderBase>,
+    private val tagSegmentReaders: List<TagSegmentReaderBase<*>>,
     private val sourceParserSettings: SourceParserSettings,
 ) : SourceParser
 {
@@ -99,15 +100,15 @@ class DefaultSourceParser(
         return index - 1
     }
 
-    abstract class TagSegmentReaderBase
+    abstract class TagSegmentReaderBase<T : TagSegmentBase>
     {
         abstract val tagPrefix: String
 
         abstract val tagSuffix: String
 
-        abstract fun createTagSegment(content: String, location: Location): TagSegmentBase
+        abstract fun createTagSegment(content: String, location: Location): T
 
-        fun readTagSegment(source: Source, startIndex: Int): TagSegmentBase?
+        fun readTagSegment(source: Source, startIndex: Int): T?
         {
             if (!source.content.substring(startIndex).startsWith(this.tagPrefix))
             {
@@ -137,49 +138,61 @@ class DefaultSourceParser(
         }
     }
 
-    class MetaTagSegmentReader : TagSegmentReaderBase()
+    class MetaTagSegmentReader : TagSegmentReaderBase<MetaTagSegment>()
     {
         override val tagPrefix: String = "<#@"
 
-        override val tagSuffix: String = "#>"
+        override val tagSuffix: String = "@#>"
 
-        override fun createTagSegment(content: String, location: Location): TagSegmentBase = MetaTagSegment(
+        override fun createTagSegment(content: String, location: Location): MetaTagSegment = MetaTagSegment(
             content = content,
             location = location,
         )
     }
 
-    class PrintTagSegmentReader : TagSegmentReaderBase()
+    class PrintTagSegmentReader : TagSegmentReaderBase<PrintTagSegment>()
     {
         override val tagPrefix: String = "<#="
 
-        override val tagSuffix: String = "#>"
+        override val tagSuffix: String = "=#>"
 
-        override fun createTagSegment(content: String, location: Location): TagSegmentBase = PrintTagSegment(
+        override fun createTagSegment(content: String, location: Location): PrintTagSegment = PrintTagSegment(
             content = content,
             location = location,
         )
     }
 
-    class KotlinTagSegmentReader : TagSegmentReaderBase()
+    class KotlinTagSegmentReader : TagSegmentReaderBase<KotlinTagSegment>()
     {
         override val tagPrefix: String = "<#!"
 
-        override val tagSuffix: String = "#>"
+        override val tagSuffix: String = "!#>"
 
-        override fun createTagSegment(content: String, location: Location): TagSegmentBase = KotlinTagSegment(
+        override fun createTagSegment(content: String, location: Location): KotlinTagSegment = KotlinTagSegment(
             content = content,
             location = location,
         )
     }
 
-    class CommentTagSegmentReader : TagSegmentReaderBase()
+    class CommentTagSegmentReader : TagSegmentReaderBase<CommentTagSegment>()
     {
         override val tagPrefix: String = "<#*"
 
-        override val tagSuffix: String = "#>"
+        override val tagSuffix: String = "*#>"
 
-        override fun createTagSegment(content: String, location: Location): TagSegmentBase = CommentTagSegment(
+        override fun createTagSegment(content: String, location: Location): CommentTagSegment = CommentTagSegment(
+            content = content,
+            location = location,
+        )
+    }
+
+    class IncludesTagSegmentReader : TagSegmentReaderBase<IncludesTagSegment>()
+    {
+        override val tagPrefix: String = "<#&"
+
+        override val tagSuffix: String = "&#>"
+
+        override fun createTagSegment(content: String, location: Location): IncludesTagSegment = IncludesTagSegment(
             content = content,
             location = location,
         )
@@ -191,6 +204,7 @@ class DefaultSourceParser(
             PrintTagSegmentReader(),
             KotlinTagSegmentReader(),
             CommentTagSegmentReader(),
+            IncludesTagSegmentReader(),
         ),
         sourceParserSettings = SourceParserSettings.createDefault(),
     )

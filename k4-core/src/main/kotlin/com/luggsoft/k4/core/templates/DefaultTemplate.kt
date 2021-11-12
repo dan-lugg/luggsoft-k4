@@ -1,24 +1,51 @@
 package com.luggsoft.k4.core.templates
 
 import com.luggsoft.k4.core.sources.Source
+import org.slf4j.Logger
 import java.io.Writer
 import javax.script.Invocable
+import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import kotlin.reflect.KClass
 
-class DefaultTemplate(
-    val script: String,
+class DefaultTemplate<T : Any>(
     override val source: Source,
+    override val script: String,
+    override val modelKClass: KClass<T>,
     val scriptEngineManager: ScriptEngineManager,
-) : Template
+) : Template<T>
 {
-    override fun execute(model: Any?, templateWriter: Any, templateLogger: Any)
+    override fun execute(model: T, writer: Writer, logger: Logger)
     {
-        val scriptEngine = this.scriptEngineManager.getEngineByExtension("kts")
-        scriptEngine.eval(this.script)
+        if (!this.modelKClass.isInstance(model))
+        {
+            TODO("Expected ${this.modelKClass}, received ${model::class}")
+        }
 
-        val invocable = scriptEngine as Invocable
-        invocable.invokeFunction("render", model, templateWriter, templateLogger)
+        lateinit var invocable: Invocable
+        lateinit var scriptEngine: ScriptEngine
+
+        try
+        {
+            scriptEngine = this.scriptEngineManager.getEngineByExtension("kts")
+            scriptEngine.eval(this.script)
+            invocable = scriptEngine as Invocable
+            invocable.invokeFunction("render", model, writer, logger)
+        }
+        catch (exception: NoSuchMethodException)
+        {
+            throw exception
+        }
+        catch (exception: Exception)
+        {
+            throw exception
+        }
     }
 
-    override fun save(writer: Writer) = writer.write(this.script)
+    override fun writeScript(writer: Writer) = writer.write(this.script)
+
+    private interface ScriptWrapper
+    {
+        fun render(model: Any, writer: Writer, logger: Logger)
+    }
 }

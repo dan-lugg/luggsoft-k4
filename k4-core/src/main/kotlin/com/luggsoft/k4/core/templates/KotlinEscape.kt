@@ -1,13 +1,16 @@
 package com.luggsoft.k4.core.templates
 
-fun CharSequence.kotlinEscape(): String = this
-    .kotlinEscape(StringBuilder())
-    .toString()
-
-fun CharSequence.kotlinEscape(buffer: Appendable): Appendable
+fun String.kotlinEscape(): String
 {
-    this.map(Char::kotlinEscape).onEach(buffer::append)
-    return buffer
+    val escapedStringBuilder = StringBuilder()
+
+    for (char in this)
+    {
+        val escapedChar = char.kotlinEscape()
+        escapedStringBuilder.append(escapedChar)
+    }
+
+    return escapedStringBuilder.toString()
 }
 
 fun Char.kotlinEscape(): String = when

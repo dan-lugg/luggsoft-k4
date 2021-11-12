@@ -1,82 +1,105 @@
 package com.luggsoft.k4.core.templates
 
+import com.luggsoft.k4.core.sources.DefaultSourceParser
+import com.luggsoft.k4.core.sources.Source
+import com.luggsoft.k4.core.sources.SourceParser
 import com.luggsoft.k4.core.sources.segments.CommentTagSegment
+import com.luggsoft.k4.core.sources.segments.IncludesTagSegment
 import com.luggsoft.k4.core.sources.segments.KotlinTagSegment
 import com.luggsoft.k4.core.sources.segments.PrintTagSegment
 import com.luggsoft.k4.core.sources.segments.RawSegment
 import com.luggsoft.k4.core.sources.segments.Segment
 import com.luggsoft.k4.core.sources.segments.SegmentList
+import org.slf4j.Logger
+import java.io.File
+import java.io.Writer
 import javax.script.ScriptEngineManager
 
 class DefaultTemplateGenerator(
+    private val sourceParser: SourceParser,
     private val metaSegmentParser: MetaSegmentParser,
     private val scriptEngineManager: ScriptEngineManager,
-    private val templateBuilderSettings: TemplateBuilderSettings,
+    private val templateGeneratorSettings: TemplateGeneratorSettings,
 ) : TemplateGenerator
 {
-    override fun generateTemplate(segmentList: SegmentList): Template
+    override fun generateTemplate(segmentList: SegmentList): Template<Any>
     {
-        val buffer = StringBuilder()
-
+        val scriptBuilder = StringBuilder()
         val meta = this.metaSegmentParser.parseMetaSegments(segmentList.metaTagSegments)
 
-        buffer.appendLine("import ${meta.modelKClass.qualifiedName}")
-        buffer.appendLine("import ${meta.templateWriterKClass.qualifiedName}")
-        buffer.appendLine("import ${meta.templateLoggerKClass.qualifiedName}")
+        scriptBuilder.appendLine("import ${meta.modelKClass.qualifiedName}")
+        scriptBuilder.appendLine("import ${Writer::class.qualifiedName}")
+        scriptBuilder.appendLine("import ${Logger::class.qualifiedName}")
 
-        for (importType in meta.importTypeNames.orEmpty())
+        for (importType in meta.importTypeNames)
         {
-            buffer.appendLine("import $importType")
+            scriptBuilder.appendLine("import $importType")
         }
 
-        buffer.appendLine("fun render(")
-        buffer.appendLine("${meta.modelParamName}: ${meta.modelKClass.simpleName},")
-        buffer.appendLine("templateWriter: ${meta.templateWriterKClass.simpleName},")
-        buffer.appendLine("templateLogger: ${meta.templateLoggerKClass.simpleName},")
-        buffer.appendLine(")")
-        buffer.appendLine("{")
+        scriptBuilder.appendLine("fun render(")
+        scriptBuilder.appendLine("${meta.modelParamName}: ${meta.modelKClass.simpleName},")
+        scriptBuilder.appendLine("writer: ${Writer::class.simpleName},")
+        scriptBuilder.appendLine("logger: ${Logger::class.simpleName},")
+        scriptBuilder.appendLine(")")
+        scriptBuilder.appendLine("{")
 
         for (segment in segmentList.sortedBy(Segment::location))
         {
             when (segment)
             {
-                is RawSegment -> buffer.appendLine("templateWriter.${meta.templateWriterKCallable.name}(${segment.content.kotlinEscape()})")
-                is PrintTagSegment -> buffer.appendLine("templateWriter.${meta.templateWriterKCallable.name}(\"\${${segment.content.trim()}}\")")
-                is KotlinTagSegment -> buffer.appendLine(segment.content.trim())
+                is RawSegment -> scriptBuilder.appendLine("writer.append(\"${segment.content.kotlinEscape()}\")")
+                is PrintTagSegment -> scriptBuilder.appendLine("writer.append(\"\${${segment.content.trim()}}\")")
+                is KotlinTagSegment -> scriptBuilder.appendLine(segment.content.trim())
 
                 is CommentTagSegment ->
                 {
-                    if (this.templateBuilderSettings[TemplateBuilderFlags.INCLUDE_COMMENTS_INLINE])
+                    if (this.templateGeneratorSettings[TemplateGeneratorFlags.INCLUDE_COMMENTS_INLINE])
                     {
                         for (line in segment.content.trim().lines())
                         {
-                            buffer.appendLine("// $line")
+                            scriptBuilder.appendLine("// $line")
                         }
                     }
 
-                    if (this.templateBuilderSettings[TemplateBuilderFlags.INCLUDE_COMMENTS_LOGGED])
+                    if (this.templateGeneratorSettings[TemplateGeneratorFlags.INCLUDE_COMMENTS_LOGGED])
                     {
                         for (line in segment.content.trim().lines())
                         {
-                            buffer.appendLine("templateLogger.${meta.templateLoggerKCallable.name}(${line.kotlinEscape()})")
+                            scriptBuilder.appendLine("logger.info(\"${line.kotlinEscape()}\")")
                         }
                     }
+                }
+
+                is IncludesTagSegment ->
+                {
+                    val fileName = segment.content.trim()
+                    val source = Source.fromFile(
+                        file = File(fileName),
+                        charset = Charsets.UTF_8,
+                    )
+                    val includesSegmentList = this.sourceParser.parseSource(source)
+                    TODO("Do something meaningful with $includesSegmentList")
                 }
             }
         }
 
-        buffer.appendLine("}")
+        scriptBuilder.appendLine("}")
 
-        return DefaultTemplate(
-            script = buffer.toString(),
+        val template = DefaultTemplate(
             source = segmentList.source,
+            script = scriptBuilder.toString(),
+            modelKClass = meta.modelKClass,
             scriptEngineManager = this.scriptEngineManager,
         )
+
+        @Suppress("UNCHECKED_CAST")
+        return template as Template<Any>
     }
 
     object Instance : TemplateGenerator by DefaultTemplateGenerator(
+        sourceParser = DefaultSourceParser.Instance,
         metaSegmentParser = DefaultMetaSegmentParser.Instance,
         scriptEngineManager = ScriptEngineManager(),
-        templateBuilderSettings = TemplateBuilderSettings.createDefault(),
+        templateGeneratorSettings = TemplateGeneratorSettings.createDefault(),
     )
 }
