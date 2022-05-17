@@ -1,51 +1,53 @@
 static def buildLibraries(Map<String, Object> libraryVersionMapping) {
     return libraryVersionMapping
-            .collect { entry -> entry.value == null ? null : "${entry.key}:${entry.value}" }
-            .findAll { library -> library != null }
-            .each { library -> println("lib -> $library") }
+        .collect { entry -> entry.value == null ? null : "${entry.key}:${entry.value}" }
+        .findAll { library -> library != null }
+        .each { library -> println("lib -> $library") }
 }
 
 ext.versions = [
-        "betterParse"   : "0.4.2",
-        "jackson"       : "2.12.3",
-        "junitJupiter"  : "5.7.0",
-        "kotlin"        : "1.5.21",
-        "ktCommon"      : "0.1.0",
-        "logbackClassic": "1.2.3",
-        "reflections"   : "0.9.11",
-        "spring"        : "5.3.9",
+    "betterParse"   : "0.4.2",
+    "jackson"       : "2.12.3",
+    "junitJupiter"  : "5.7.0",
+    "kotlin"        : "1.5.21",
+    "ktCommon"      : "1.1.1",
+    "logbackClassic": "1.2.3",
+    "picocli"       : "4.6.1",
+    "reflections"   : "0.9.11",
+    "spring"        : "5.3.9",
 ]
 
 ext.libraries = buildLibraries([
-        "ch.qos.logback:logback-classic"                                : versions.logbackClassic,
-        "com.fasterxml.jackson.core:jackson-annotations"                : versions.jackson,
-        "com.fasterxml.jackson.core:jackson-core"                       : versions.jackson,
-        "com.fasterxml.jackson.core:jackson-databind"                   : versions.jackson,
-        "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor"      : versions.jackson,
-        "com.fasterxml.jackson.dataformat:jackson-dataformat-properties": versions.jackson,
-        "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"       : versions.jackson,
-        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"      : versions.jackson,
-        "com.fasterxml.jackson.datatype:jackson-datatype-joda"          : versions.jackson,
-        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"        : versions.jackson,
-        "com.fasterxml.jackson.module:jackson-module-kotlin"            : versions.jackson,
-        "com.github.h0tk3y.betterParse:better-parse"                    : versions.betterParse,
-        "com.luggsoft.common:common"                                    : versions.ktCommon,
-        "com.luggsoft.common:common-commands"                           : versions.ktCommon,
-        "org.jetbrains.kotlin:kotlin-allopen"                           : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-gradle-plugin"                     : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-reflect"                           : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-script-runtime"                    : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-scripting-jsr223"                  : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-stdlib-jdk8"                       : versions.kotlin,
-        "org.jetbrains.kotlin:kotlin-test"                              : versions.kotlin,
-        "org.junit.jupiter:junit-jupiter"                               : versions.junitJupiter,
-        "org.junit.jupiter:junit-jupiter-api"                           : versions.junitJupiter,
-        "org.junit.jupiter:junit-jupiter-engine"                        : versions.junitJupiter,
-        "org.junit.jupiter:junit-jupiter-params"                        : versions.junitJupiter,
-        "org.reflections:reflections"                                   : versions.reflections,
-        "org.springframework:spring-context"                            : versions.spring,
+    "ch.qos.logback:logback-classic"                                : versions.logbackClassic,
+    "com.fasterxml.jackson.core:jackson-annotations"                : versions.jackson,
+    "com.fasterxml.jackson.core:jackson-core"                       : versions.jackson,
+    "com.fasterxml.jackson.core:jackson-databind"                   : versions.jackson,
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor"      : versions.jackson,
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-properties": versions.jackson,
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"       : versions.jackson,
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"      : versions.jackson,
+    "com.fasterxml.jackson.datatype:jackson-datatype-joda"          : versions.jackson,
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"        : versions.jackson,
+    "com.fasterxml.jackson.module:jackson-module-kotlin"            : versions.jackson,
+    "com.github.h0tk3y.betterParse:better-parse"                    : versions.betterParse,
+    "com.luggsoft.common:common"                                    : versions.ktCommon,
+    "info.picocli:picocli"                                          : versions.picocli,
+    "info.picocli:picocli-spring-boot-starter"                      : versions.picocli,
+    "org.jetbrains.kotlin:kotlin-allopen"                           : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-gradle-plugin"                     : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-reflect"                           : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-script-runtime"                    : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-scripting-jsr223"                  : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-stdlib-jdk8"                       : versions.kotlin,
+    "org.jetbrains.kotlin:kotlin-test"                              : versions.kotlin,
+    "org.junit.jupiter:junit-jupiter"                               : versions.junitJupiter,
+    "org.junit.jupiter:junit-jupiter-api"                           : versions.junitJupiter,
+    "org.junit.jupiter:junit-jupiter-engine"                        : versions.junitJupiter,
+    "org.junit.jupiter:junit-jupiter-params"                        : versions.junitJupiter,
+    "org.reflections:reflections"                                   : versions.reflections,
+    "org.springframework:spring-context"                            : versions.spring,
 ])
 
 ext.githubRepositories = [
-        "https://maven.pkg.github.com/dan-lugg/kt-common",
+    "https://maven.pkg.github.com/dan-lugg/kt-common",
 ]

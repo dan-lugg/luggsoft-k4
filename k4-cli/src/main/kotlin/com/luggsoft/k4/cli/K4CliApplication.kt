@@ -6,7 +6,7 @@ import org.springframework.boot.runApplication
 import kotlin.system.exitProcess
 
 @SpringBootApplication
-open class K4CliApplication
+class K4CliApplication
 {
     companion object
     {

@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="K4CommandLineRunner (compile)" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.luggsoft.k4.cli.K4CommandLineRunner" />
+    <module name="kt-k4.k4-cli.main" />
+    <option name="PROGRAM_PARAMETERS" value="compile -s &quot;file:///$USER_HOME$/Projects/Windows-universal-samples/Samples/LockScreenApps/README.md&quot;" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

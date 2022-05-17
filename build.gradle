@@ -66,23 +66,22 @@ subprojects {
 
     dependencies {
         implementation(
-                "ch.qos.logback:logback-classic",
-                "com.fasterxml.jackson.core:jackson-annotations",
-                "com.fasterxml.jackson.core:jackson-core",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
-                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
-                "com.fasterxml.jackson.module:jackson-module-kotlin",
-                "com.luggsoft.common:common",
-                "com.luggsoft.common:common-commands",
-                "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-                "org.reflections:reflections",
-                sourceSets.example.output,
+            "ch.qos.logback:logback-classic",
+            "com.fasterxml.jackson.core:jackson-annotations",
+            "com.fasterxml.jackson.core:jackson-core",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
+            "com.fasterxml.jackson.module:jackson-module-kotlin",
+            "com.luggsoft.common:common",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+            "org.reflections:reflections",
+            sourceSets.example.output,
         )
 
         testImplementation(
-                "org.junit.jupiter:junit-jupiter",
+            "org.junit.jupiter:junit-jupiter",
         )
     }
 
