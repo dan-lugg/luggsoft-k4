@@ -1,5 +1,0 @@
-<#@
-model-type: com.luggsoft.k4.scaffolding.BarModel
-#>
-
-# TITLE: ${model.title}
