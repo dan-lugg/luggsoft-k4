@@ -2,7 +2,7 @@ package com.luggsoft.k4.core
 
 import com.facebook.ktfmt.format.Formatter
 import com.facebook.ktfmt.format.FormattingOptions
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.luggsoft.common.text.kotlinEscape
 import com.luggsoft.k4.core.segments.CodeTagSegment
 import com.luggsoft.k4.core.segments.EchoTagSegment
 import com.luggsoft.k4.core.segments.MetaTagSegment
@@ -12,9 +12,7 @@ import com.luggsoft.k4.core.segments.TagSegmentBase
 import java.io.StringWriter
 import java.io.Writer
 
-class DefaultTemplateWriter(
-    private val objectMapper: ObjectMapper,
-) : TemplateWriter
+class DefaultTemplateWriter : TemplateWriter
 {
     override fun writeTemplate(writer: Writer, segments: Iterable<Segment>)
     {
@@ -52,20 +50,23 @@ class DefaultTemplateWriter(
             {
                 is RawSegment ->
                 {
-                    writer.appendLine("writer.append(${this.objectMapper.writeValueAsString(segment.content)})")
+                    writer.appendLine("writer.append(\"${segment.content.kotlinEscape()}\")")
                 }
+
                 is TagSegmentBase ->
                 {
                     when (segment)
                     {
                         is MetaTagSegment ->
                         {
-                            writer.appendLine("meta(${this.objectMapper.writeValueAsString(segment.content)})")
+                            writer.appendLine("meta(\"${segment.content.kotlinEscape()}\")")
                         }
+
                         is EchoTagSegment ->
                         {
                             writer.appendLine("writer.append(${segment.content.trim()})")
                         }
+
                         is CodeTagSegment ->
                         {
                             for (line in segment.content.lines())
