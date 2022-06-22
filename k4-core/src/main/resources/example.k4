@@ -1,3 +1,5 @@
+<#@ modelName: "name" #>
+
 Hello <#= name #>!
 
 How are you doing? It is currently <#= Instant.now() #>.

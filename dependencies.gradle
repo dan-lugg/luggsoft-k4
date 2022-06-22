@@ -10,7 +10,7 @@ ext.versions = [
     "jackson"       : "2.13.3",
     "junitJupiter"  : "5.7.0",
     "kotlin"        : "1.6.21",
-    "ktCommon"      : "1.1.1",
+    "ktCommon"      : "1.1.2",
     "logbackClassic": "1.2.3",
     "picocli"       : "4.6.3",
     "reflections"   : "0.10.2",

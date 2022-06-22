@@ -118,7 +118,7 @@ class DefaultSegmentParser : SegmentParser
                             startLineNumber = startLineNumber,
                             untilLineNumber = untilLineNumber,
                             startColumnNumber = startColumnNumber,
-                            untilColumnNumber = untilColumnNumber
+                            untilColumnNumber = untilColumnNumber,
                         )
                         startLineNumber = untilLineNumber
                         startColumnNumber = untilColumnNumber
@@ -164,19 +164,35 @@ class DefaultSegmentParser : SegmentParser
             // If source iterator still has more characters
             if (sourceIterator.hasNext())
             {
-                // Check for line-endings and update line and column numbers accordingly
-                if (sourceIterator.peekEquals("\r\n") || sourceIterator.peekEquals("\n"))
+                // Check for newlines
+                when
                 {
-                    untilLineNumber += 1
-                    untilColumnNumber = 1
-                }
-                else
-                {
-                    untilColumnNumber += 1
-                }
+                    // On Windows newline
+                    sourceIterator.peekEquals("\r\n") ->
+                    {
+                        // Update line/column numbers and append to the buffer
+                        untilLineNumber += 1
+                        untilColumnNumber = 1
+                        contentBuilder.append(sourceIterator.next(2))
+                    }
 
-                // Append them to the buffer
-                contentBuilder.append(sourceIterator.next())
+                    // On *nix newline
+                    sourceIterator.peekEquals("\n") ->
+                    {
+                        // Update line/column numbers and append to the buffer
+                        untilLineNumber += 1
+                        untilColumnNumber = 1
+                        contentBuilder.append(sourceIterator.next(1))
+                    }
+
+                    // Otherwise
+                    else ->
+                    {
+                        // Increment the column number and append to the buffer
+                        untilColumnNumber += 1
+                        contentBuilder.append(sourceIterator.next())
+                    }
+                }
             }
             else
             {

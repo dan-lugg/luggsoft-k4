@@ -16,8 +16,8 @@ import com.luggsoft.k4.core.segments.MetaTagSegment
 import com.luggsoft.k4.core.segments.Segment
 import com.luggsoft.k4.core.segments.parsers.DefaultSegmentParser
 import com.luggsoft.k4.core.segments.parsers.SegmentParser
+import com.luggsoft.k4.core.sources.FileSource
 import com.luggsoft.k4.core.sources.Source
-import com.luggsoft.k4.core.sources.StringSource
 import org.intellij.lang.annotations.Language
 import java.io.File
 import kotlin.reflect.KClass
@@ -153,13 +153,77 @@ fun main()
     templateDataParser.parseTemplateData(source)
     */
 
-    val file = File("/Users/dan.lugg/IdeaProjects/kt-k4/k4-core/src/main/resources/example.k4")
+    ///
 
     val segmentParser = DefaultSegmentParser()
-    val source = StringSource(
-        name = file.absolutePath,
-        content = file.readText(),
+    val source = FileSource(
+        file = File("/Users/dan.lugg/IdeaProjects/kt-k4/k4-core/src/main/resources/example.k4"),
     )
     val segments = segmentParser.parseSegments(source)
     segments.forEach(::println)
+
+    ///
+
+    /*
+    val string = "Hello, how are you doing today?"
+    val reader = StringReader(string)
+    val iterator = ReadableIterator(reader, 8)
+    val sourceIterator = DefaultSourceIterator(iterator)
+
+    while (sourceIterator.hasNext())
+    {
+        if (sourceIterator.peekEquals("you"))
+        {
+            sourceIterator.skip(3)
+            continue
+        }
+
+        val char = sourceIterator.next()
+        print(char)
+    }
+    */
 }
+
+/*
+class ReadableIterator(
+    private val readable: Readable,
+    private val bufferCapacity: Int = 4096,
+) : Iterator<Char>
+{
+    private val charBuffer = CharBuffer.allocate(this.bufferCapacity)
+    private var limit: Int = 0
+
+    init
+    {
+        this.limit = this.readable.read(this.charBuffer)
+
+        if (this.limit > 0)
+        {
+            this.charBuffer.limit(this.limit)
+            this.charBuffer.rewind()
+        }
+    }
+
+    override fun hasNext(): Boolean
+    {
+        if (this.limit > 0 && this.charBuffer.hasRemaining())
+        {
+            return true
+        }
+
+        this.charBuffer.clear()
+        this.limit = this.readable.read(this.charBuffer)
+
+        if (this.limit > 0)
+        {
+            this.charBuffer.limit(this.limit)
+            this.charBuffer.rewind()
+            return this.charBuffer.hasRemaining()
+        }
+
+        return false
+    }
+
+    override fun next(): Char = this.charBuffer.get()
+}
+*/
