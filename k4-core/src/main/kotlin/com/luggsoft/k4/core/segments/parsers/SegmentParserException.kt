@@ -1,4 +1,4 @@
-package com.luggsoft.k4.core
+package com.luggsoft.k4.core.segments.parsers
 
 class SegmentParserException : RuntimeException
 {

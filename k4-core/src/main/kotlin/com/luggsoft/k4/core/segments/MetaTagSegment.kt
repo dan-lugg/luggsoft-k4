@@ -6,6 +6,3 @@ data class MetaTagSegment(
     override val content: String,
     override val location: Location,
 ) : TagSegmentBase()
-{
-    override val typeName: String = "META"
-}

@@ -1,4 +1,4 @@
-package com.luggsoft.k4.core.sources
+package com.luggsoft.k4.core.sources.iterators
 
 interface SourceIterator : Iterator<Char>
 {

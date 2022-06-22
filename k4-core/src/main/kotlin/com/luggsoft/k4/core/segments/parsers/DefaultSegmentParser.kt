@@ -1,14 +1,14 @@
-package com.luggsoft.k4.core
+package com.luggsoft.k4.core.segments.parsers
 
+import com.luggsoft.k4.core.DefaultLocation
 import com.luggsoft.k4.core.segments.CodeTagSegment
 import com.luggsoft.k4.core.segments.EchoTagSegment
 import com.luggsoft.k4.core.segments.MetaTagSegment
 import com.luggsoft.k4.core.segments.RawSegment
 import com.luggsoft.k4.core.segments.Segment
 import com.luggsoft.k4.core.sources.Source
-import com.luggsoft.k4.core.peekEquals
-import com.luggsoft.k4.core.skip
-import com.luggsoft.k4.core.tryConsumeNextDelimited
+import com.luggsoft.k4.core.sources.iterators.peekEquals
+import com.luggsoft.k4.core.sources.iterators.skip
 
 class DefaultSegmentParser : SegmentParser
 {
@@ -20,6 +20,11 @@ class DefaultSegmentParser : SegmentParser
         var segmentStartIndex = 0
         val contentBuilder = StringBuilder()
         val sourceIterator = source.createSourceIterator()
+
+        var startLineNumber = 1
+        var untilLineNumber = 1
+        var startColumnNumber = 1
+        var untilColumnNumber = 1
 
         // While the source iterator has more characters
         while (sourceIterator.hasNext())
@@ -37,15 +42,21 @@ class DefaultSegmentParser : SegmentParser
                             // If there's buffered content
                             if (contentBuilder.isNotEmpty())
                             {
-                                // Emit a raw segment of the buffered content and clear the buffer
+                                // Update the line/column numbers, emit a raw segment of the buffered content, and clear the buffer
                                 val segment = RawSegment(
                                     content = contentBuilder.toString(),
                                     location = DefaultLocation(
                                         source = source,
                                         startIndex = segmentStartIndex,
                                         untilIndex = sourceIterator.index,
+                                        startLineNumber = startLineNumber,
+                                        untilLineNumber = untilLineNumber,
+                                        startColumnNumber = startColumnNumber,
+                                        untilColumnNumber = untilColumnNumber
                                     ),
                                 )
+                                startLineNumber = untilLineNumber
+                                startColumnNumber = untilColumnNumber
                                 this.yield(segment)
                                 contentBuilder.clear()
                             }
@@ -57,6 +68,7 @@ class DefaultSegmentParser : SegmentParser
                                 {
                                     // Skip the prefix and switch to META
                                     segmentStartIndex = sourceIterator.skip(3)
+                                    untilColumnNumber += 3
                                     state = State.META
                                 }
 
@@ -65,6 +77,7 @@ class DefaultSegmentParser : SegmentParser
                                 {
                                     // Skip the prefix and switch to ECHO
                                     segmentStartIndex = sourceIterator.skip(3)
+                                    untilColumnNumber += 3
                                     state = State.ECHO
                                 }
 
@@ -73,6 +86,7 @@ class DefaultSegmentParser : SegmentParser
                                 {
                                     // Skip the prefix and switch to CODE
                                     segmentStartIndex = sourceIterator.skip(2)
+                                    untilColumnNumber += 2
                                     state = State.CODE
                                 }
                             }
@@ -83,48 +97,51 @@ class DefaultSegmentParser : SegmentParser
                 // If we're parsing in META, ECHO, or CODE states
                 State.META,
                 State.ECHO,
-                State.CODE
-                ->
+                State.CODE ->
                 {
+                    // TODO: re-enable
                     // Try read-skipping a Kotlin raw string
-                    sourceIterator.tryConsumeNextDelimited("\"\"\"", contentBuilder)
+                    // sourceIterator.tryConsumeNextDelimited("\"\"\"", contentBuilder)
 
+                    // TODO: re-enable
                     // Try read-skipping a Kotlin string
-                    sourceIterator.tryConsumeNextDelimited("\"", contentBuilder)
+                    // sourceIterator.tryConsumeNextDelimited("\"", contentBuilder)
 
                     // When we encounter an end tag
                     if (sourceIterator.peekEquals("#>"))
                     {
+                        // Create a location for the tag, and update the line/column numbers
+                        val location = DefaultLocation(
+                            source = source,
+                            startIndex = segmentStartIndex,
+                            untilIndex = sourceIterator.index,
+                            startLineNumber = startLineNumber,
+                            untilLineNumber = untilLineNumber,
+                            startColumnNumber = startColumnNumber,
+                            untilColumnNumber = untilColumnNumber
+                        )
+                        startLineNumber = untilLineNumber
+                        startColumnNumber = untilColumnNumber
+                        segmentStartIndex += 2
+
                         val segment = when (state)
                         {
                             // If we're parsing META create a meta tag segment with the buffered content
                             State.META -> MetaTagSegment(
                                 content = contentBuilder.toString(),
-                                location = DefaultLocation(
-                                    source = source,
-                                    startIndex = segmentStartIndex,
-                                    untilIndex = sourceIterator.index,
-                                ),
+                                location = location,
                             )
 
                             // If we're parsing ECHO create an echo tag segment with the buffered content
                             State.ECHO -> EchoTagSegment(
                                 content = contentBuilder.toString(),
-                                location = DefaultLocation(
-                                    source = source,
-                                    startIndex = segmentStartIndex,
-                                    untilIndex = sourceIterator.index,
-                                ),
+                                location = location,
                             )
 
                             // If we're parsing CODE create a code tag segment with the buffered content
                             State.CODE -> CodeTagSegment(
                                 content = contentBuilder.toString(),
-                                location = DefaultLocation(
-                                    source = source,
-                                    startIndex = segmentStartIndex,
-                                    untilIndex = sourceIterator.index,
-                                ),
+                                location = location,
                             )
 
                             // If the parsing state is anything else, puke
@@ -136,6 +153,7 @@ class DefaultSegmentParser : SegmentParser
                         // Emit the tag segment, skip the suffix, clear the buffer, and switch to TEXT
                         this.yield(segment)
                         segmentStartIndex = sourceIterator.skip(2)
+                        untilColumnNumber += 2
                         contentBuilder.clear()
                         state = State.TEXT
                         continue
@@ -146,6 +164,17 @@ class DefaultSegmentParser : SegmentParser
             // If source iterator still has more characters
             if (sourceIterator.hasNext())
             {
+                // Check for line-endings and update line and column numbers accordingly
+                if (sourceIterator.peekEquals("\r\n") || sourceIterator.peekEquals("\n"))
+                {
+                    untilLineNumber += 1
+                    untilColumnNumber = 1
+                }
+                else
+                {
+                    untilColumnNumber += 1
+                }
+
                 // Append them to the buffer
                 contentBuilder.append(sourceIterator.next())
             }
@@ -166,6 +195,10 @@ class DefaultSegmentParser : SegmentParser
                     source = source,
                     startIndex = segmentStartIndex,
                     untilIndex = sourceIterator.index,
+                    startLineNumber = startLineNumber,
+                    untilLineNumber = untilLineNumber,
+                    startColumnNumber = startColumnNumber,
+                    untilColumnNumber = untilColumnNumber,
                 ),
             )
             this.yield(segment)
@@ -179,5 +212,4 @@ class DefaultSegmentParser : SegmentParser
         ECHO,
         CODE,
     }
-
 }

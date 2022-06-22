@@ -1,0 +1,7 @@
+Hello <#= name #>!
+
+How are you doing? It is currently <#= Instant.now() #>.
+
+<# if (true) { #>
+This content will display, because the condition is true.
+<# } #>

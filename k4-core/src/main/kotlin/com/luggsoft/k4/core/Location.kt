@@ -74,5 +74,9 @@ interface Location
         override val source: Source = Source.UnknownSource
         override val startIndex: Int = -1
         override val untilIndex: Int = -1
+        override val startLineNumber: Int = -1
+        override val untilLineNumber: Int = -1
+        override val startColumnNumber: Int = -1
+        override val untilColumnNumber: Int = -1
     }
 }
