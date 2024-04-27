@@ -1,11 +1,11 @@
 package com.luggsoft.k4.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.h0tk3y.betterParse.combinators.and
 import com.github.h0tk3y.betterParse.combinators.map
-import com.github.h0tk3y.betterParse.combinators.or
-import com.github.h0tk3y.betterParse.combinators.separatedTerms
 import com.github.h0tk3y.betterParse.combinators.skip
+import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
 import com.github.h0tk3y.betterParse.lexer.RegexToken
@@ -15,102 +15,142 @@ import com.github.h0tk3y.betterParse.parser.Parser
 import com.luggsoft.k4.core.segments.MetaTagSegment
 import com.luggsoft.k4.core.segments.Segment
 import com.luggsoft.k4.core.segments.parsers.DefaultSegmentParser
-import com.luggsoft.k4.core.segments.parsers.SegmentParser
-import com.luggsoft.k4.core.sources.FileSource
 import com.luggsoft.k4.core.sources.Source
 import org.intellij.lang.annotations.Language
+import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.Writer
 import kotlin.reflect.KClass
 
-@Target(AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
-annotation class LocationInfo(
-    val sourceName: String,
-    val startIndex: Int,
-    val untilIndex: Int,
-)
-
-data class TemplateData(
-    val source: Source,
-    val segments: Iterable<Segment>,
-    val modelName: String,
-    val modelKClass: KClass<*>,
-)
-
-interface TemplateDataParser
+interface MetaPropertyParser
 {
-    fun parseTemplateData(source: Source): TemplateData
+    fun parseMetaProperty(input: String): MetaProperty
 }
 
-class DefaultTemplateDataParser(
-    private val segmentParser: SegmentParser,
-    private val metadataGrammar: MetadataGrammar,
-) : TemplateDataParser
+class DefaultMetaPropertyParser(
+    private val metaPropertyGrammar: MetaPropertyGrammar,
+) : MetaPropertyParser
 {
-    override fun parseTemplateData(source: Source): TemplateData
+    override fun parseMetaProperty(input: String): MetaProperty = this.metaPropertyGrammar
+        .parseToEnd(input)
+}
+
+interface TemplateFactory
+{
+    fun <TModel : Any> createTemplate(segments: Iterable<Segment>): Template<TModel>
+}
+
+internal fun Iterable<MetaProperty>.ofName(metaDirectiveName: String): Iterable<MetaProperty> = this.asSequence()
+    .filter { metaProperty -> metaProperty.name.equals(metaDirectiveName, true) }
+    .toList()
+
+internal fun Iterable<MetaProperty>.asMap(metaDirectiveName: String): Map<String, Any?> = this.ofName(metaDirectiveName)
+    .map { metaProperty -> metaProperty.attributeMap }
+    .reduce { acc, map -> acc + map }
+
+internal fun Iterable<MetaProperty>.asList(metaDirectiveName: String, attributeName: String): List<Any?> = this.ofName(metaDirectiveName)
+    .map { metaProperty -> metaProperty.attributeMap[attributeName] }
+    .toList()
+
+class DefaultTemplateFactory(
+    private val metaPropertyParser: MetaPropertyParser,
+) : TemplateFactory
+{
+    private fun buildImports(metaProperties: List<MetaProperty>): List<Class<*>> = metaProperties.asSequence()
+        .filter { metaProperty -> metaProperty.name == "import" }
+        .mapNotNull { metaProperty -> metaProperty.attributeMap["name"] as? String }
+        .map { name -> Class.forName(name) }
+        .toList()
+
+    override fun <TModel : Any> createTemplate(segments: Iterable<Segment>): Template<TModel>
     {
-        val segments = this.segmentParser.parseSegments(source)
-        segments.forEach(::println)
-        TODO()
+        val metaProperties = this.parseMetaProperties(segments)
+        println(metaProperties)
 
-        val metadataMap = segments
-            .filterIsInstance<MetaTagSegment>()
-            .map(this::parseMetadata)
-            .flatMap(Map<String, Any?>::entries)
-            .associate(Map.Entry<String, Any?>::toPair)
-            .toMap()
+        val importData = metaProperties.asList("import", "name")
+        println(importData)
 
-        println(metadataMap)
-        segments.forEach(::println)
+        val templateData = metaProperties.asMap("template")
+        println(templateData)
+
+        /*
+        val imports = this.buildImports(metaProperties)
+        for (import in imports)
+        {
+            println(import.name)
+        }
+
+        println(imports)
+        */
+
         TODO()
     }
 
-    private fun parseMetadata(metaTagSegment: MetaTagSegment): Map<String, Any?> = this.metadataGrammar
-        .parseToEnd(metaTagSegment.content)
+    private fun generateTemplate(segments: Iterable<Segment>, writer: Writer)
+    {
+
+    }
+
+    private fun generateTemplateHeader(segments: Iterable<Segment>, writer: Writer)
+    {
+    }
+
+    private fun generateTemplateScript(segments: Iterable<Segment>, writer: Writer)
+    {
+
+    }
+
+    private fun generateTemplateFooter(segments: Iterable<Segment>, writer: Writer)
+    {
+    }
+
+    private fun parseMetaProperties(segments: Iterable<Segment>) = segments
+        .asSequence()
+        .filterIsInstance<MetaTagSegment>()
+        .map(MetaTagSegment::content)
+        .map(this.metaPropertyParser::parseMetaProperty)
+        .toList()
+
 }
 
 ///
 
-class MetadataGrammar(
+data class MetaProperty(
+    val name: String,
+    val attributeMap: Map<String, Any?>,
+)
+
+class MetaPropertyGrammar(
     private val objectMapper: ObjectMapper,
-    private val valueKClassMapping: Map<String, KClass<*>>,
-) : Grammar<Map<String, Any?>>()
+    private val attributeKClassMapping: Map<String, Map<String, KClass<*>>>,
+) : Grammar<MetaProperty>()
 {
-    val spaceToken by expressionToken(pattern = """\s+""", ignore = true)
+    val wsToken by expressionToken(pattern = """\s+""", ignore = true)
 
-    val colonToken by literalToken(text = ":")
-    val commaToken by literalToken(text = ",")
+    val nameToken by expressionToken(pattern = """\w+""")
 
-    val trueBooleanValueToken by literalToken(text = "true")
+    val valueToken by expressionToken(pattern = """"([^"]|\\")*"""")
 
-    val falseBooleanValueToken by literalToken(text = "false")
+    val equalToken by literalToken(text = "=")
 
-    val booleanValueToken by or(
-        this.trueBooleanValueToken,
-        this.falseBooleanValueToken
-    )
-
-    val nullValueToken by literalToken(text = "null")
-
-    val nameToken by expressionToken(pattern = """[a-zA-Z_][a-zA-Z0-9_]*""")
-
-    val stringValueToken by expressionToken(pattern = """"((\\"|[^"])*)"""")
-
-    val numberValueToken by expressionToken(pattern = """-?([1-9][0-9]*|0)(\.[0-9]+)?""")
-
-    val valueToken by or(
-        this.stringValueToken,
-        this.numberValueToken,
-        this.booleanValueToken,
-        this.nullValueToken,
-    )
-
-    val pairParser: Parser<Pair<String, Any?>> by (this.nameToken and skip(this.colonToken) and this.valueToken) map pair@{ (nameTokenMatch, valueTokenMatch) ->
-        val valueKClass = this.valueKClassMapping.getOrDefault(nameTokenMatch.text, Any::class)
-        return@pair nameTokenMatch.text to this.objectMapper.readValue(valueTokenMatch.text, valueKClass.java)
+    val attributePairParser: Parser<Pair<String, String>> by (this.nameToken and skip(this.equalToken) and this.valueToken) map attributePair@{ (nameTokenMatch, valueTokenMatch) ->
+        return@attributePair nameTokenMatch.text to valueTokenMatch.text
     }
 
-    override val rootParser: Parser<Map<String, Any?>> by separatedTerms(this.pairParser, this.commaToken, true) map map@{ pairs -> pairs.toMap() }
+    val attributeMapParser: Parser<Map<String, String>> by zeroOrMore(this.attributePairParser) map attributeMap@{ attributePairs ->
+        return@attributeMap attributePairs.toMap()
+    }
+
+    override val rootParser: Parser<MetaProperty> by (this.nameToken and this.attributeMapParser) map root@{ (nameTokenMatch, attributeMap) ->
+        val name = nameTokenMatch.text
+        return@root MetaProperty(
+            name = name,
+            attributeMap = attributeMap.mapValues { (key, value) ->
+                val kClass = this.attributeKClassMapping.get(name)?.get(key) ?: Any::class
+                return@mapValues this.objectMapper.readValue(value, kClass.java)
+            },
+        )
+    }
 
     private companion object
     {
@@ -118,49 +158,100 @@ class MetadataGrammar(
             pattern = pattern,
             ignore = ignore,
         )
-
-        fun <T> or(vararg parsers: Parser<T>): Parser<T> = parsers.reduce { orParser, parser -> orParser or parser }
     }
 }
 
-///
+/*
+fun main()
+{
+    val metadataGrammar = MetadataGrammar(
+        objectMapper = jacksonObjectMapper(),
+        attributeKClassMapping = mapOf(
+            "modelName" to String::class,
+            "modelType" to Class::class,
+            "recursion" to Int::class,
+        ),
+    )
 
-const val INPUT = """
-<#@ modelName: "foo", modelType: "java.lang.String" #>
-Hello <#= foo #>!
-"""
+    val directive = metadataGrammar.parseToEnd(""" myDirective """)
+    println(directive)
+    for ((key, value) in directive.attributeMap)
+    {
+        println("$key -> $value (${(value ?: Unit)::class})")
+    }
+}
+*/
 
 fun main()
 {
-    /*
-    val objectMapper = jacksonObjectMapper()
+    val source = Source.fromFile(
+        file = File("${File("./").canonicalPath}/k4-core/src/main/resources/example.k4"),
+    )
 
-    val templateDataParser = DefaultTemplateDataParser(
-        segmentParser = DefaultSegmentParser(),
-        metadataGrammar = MetadataGrammar(
-            objectMapper = objectMapper,
-            valueKClassMapping = mapOf(
-                "modelName" to String::class,
-                "modelType" to Class::class,
+    val segmentParser = DefaultSegmentParser(
+        logger = LoggerFactory.getLogger(DefaultSegmentParser::class.java),
+    )
+
+    val templateFactory = DefaultTemplateFactory(
+        metaPropertyParser = DefaultMetaPropertyParser(
+            metaPropertyGrammar = MetaPropertyGrammar(
+                objectMapper = jacksonObjectMapper(),
+                attributeKClassMapping = emptyMap(),
             )
         )
     )
 
-    val source = Source.fromFile(
-        file = File("/Users/dan.lugg/IdeaProjects/kt-k4/k4-core/src/main/resources/example.k4"),
-    )
+    val writer = System.out.writer()
 
-    templateDataParser.parseTemplateData(source)
-    */
+    val segments = segmentParser.parseSegments(source)
+    val template = templateFactory.createTemplate<Any>(segments)
+    template.render(writer, null)
+    writer.flush()
 
     ///
 
-    val segmentParser = DefaultSegmentParser()
+    /*
+    val segmentParser = DefaultSegmentParser(
+        logger = LoggerFactory.getLogger("parser"),
+    )
+
     val source = FileSource(
         file = File("/Users/dan.lugg/IdeaProjects/kt-k4/k4-core/src/main/resources/example.k4"),
     )
+
     val segments = segmentParser.parseSegments(source)
-    segments.forEach(::println)
+
+    val objectMapper = jacksonObjectMapper()
+
+    val metadataGrammar = MetadataGrammar(
+        objectMapper = objectMapper,
+        valueKClassMapping = emptyMap(),
+    )
+
+    val metadataMap = segments.asSequence()
+        .takeWhile { segment ->
+            return@takeWhile when (segment)
+            {
+                is MetaTagSegment -> true
+                is RawSegment -> segment.content.isBlank()
+                else -> false
+            }
+        }
+        .filterIsInstance<MetaTagSegment>()
+        .map(MetaTagSegment::content)
+        .map(metadataGrammar::parseToEnd)
+        .flatMap(Map<String, *>::entries)
+        .associate(Map.Entry<String, *>::toPair)
+
+    println("metadataMap=$metadataMap")
+    println()
+
+    for (segment in segments)
+    {
+        println("segment=$segment")
+        println()
+    }
+    */
 
     ///
 
@@ -184,46 +275,5 @@ fun main()
     */
 }
 
-/*
-class ReadableIterator(
-    private val readable: Readable,
-    private val bufferCapacity: Int = 4096,
-) : Iterator<Char>
-{
-    private val charBuffer = CharBuffer.allocate(this.bufferCapacity)
-    private var limit: Int = 0
+///
 
-    init
-    {
-        this.limit = this.readable.read(this.charBuffer)
-
-        if (this.limit > 0)
-        {
-            this.charBuffer.limit(this.limit)
-            this.charBuffer.rewind()
-        }
-    }
-
-    override fun hasNext(): Boolean
-    {
-        if (this.limit > 0 && this.charBuffer.hasRemaining())
-        {
-            return true
-        }
-
-        this.charBuffer.clear()
-        this.limit = this.readable.read(this.charBuffer)
-
-        if (this.limit > 0)
-        {
-            this.charBuffer.limit(this.limit)
-            this.charBuffer.rewind()
-            return this.charBuffer.hasRemaining()
-        }
-
-        return false
-    }
-
-    override fun next(): Char = this.charBuffer.get()
-}
-*/

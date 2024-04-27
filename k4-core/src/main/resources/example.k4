@@ -1,4 +1,7 @@
-<#@ modelName: "name" #>
+<#@ template name="example1" output="text/plain" #>
+<#@ template name="example2" #>
+<#@ import name="java.lang.String" #>
+<#@ import name="com.luggsoft.k4.core.Location" #>
 
 Hello <#= name #>!
 

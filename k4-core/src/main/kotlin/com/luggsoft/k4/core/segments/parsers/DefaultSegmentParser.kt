@@ -9,8 +9,11 @@ import com.luggsoft.k4.core.segments.Segment
 import com.luggsoft.k4.core.sources.Source
 import com.luggsoft.k4.core.sources.iterators.peekEquals
 import com.luggsoft.k4.core.sources.iterators.skip
+import org.slf4j.Logger
 
-class DefaultSegmentParser : SegmentParser
+class DefaultSegmentParser(
+    private val logger: Logger,
+) : SegmentParser
 {
     override fun parseSegments(source: Source): Iterable<Segment> = this.buildSegmentSequence(source).asIterable()
 
@@ -20,11 +23,16 @@ class DefaultSegmentParser : SegmentParser
         var segmentStartIndex = 0
         val contentBuilder = StringBuilder()
         val sourceIterator = source.createSourceIterator()
+        val logger = this@DefaultSegmentParser.logger
 
+        // Initialize line/column numbers
         var startLineNumber = 1
         var untilLineNumber = 1
         var startColumnNumber = 1
         var untilColumnNumber = 1
+
+        // Start
+        logger.debug("Segment parsing sequence state initialized")
 
         // While the source iterator has more characters
         while (sourceIterator.hasNext())
@@ -42,7 +50,7 @@ class DefaultSegmentParser : SegmentParser
                             // If there's buffered content
                             if (contentBuilder.isNotEmpty())
                             {
-                                // Update the line/column numbers, emit a raw segment of the buffered content, and clear the buffer
+                                // Create a parsed segment
                                 val segment = RawSegment(
                                     content = contentBuilder.toString(),
                                     location = DefaultLocation(
@@ -55,6 +63,11 @@ class DefaultSegmentParser : SegmentParser
                                         untilColumnNumber = untilColumnNumber
                                     ),
                                 )
+
+                                // Log the segment
+                                logger.debug("Parsed segment, $segment")
+
+                                // Update the line/column numbers, emit a raw segment of the buffered content, and clear the buffer
                                 startLineNumber = untilLineNumber
                                 startColumnNumber = untilColumnNumber
                                 this.yield(segment)
@@ -124,6 +137,7 @@ class DefaultSegmentParser : SegmentParser
                         startColumnNumber = untilColumnNumber
                         segmentStartIndex += 2
 
+                        // Create a parsed segment
                         val segment = when (state)
                         {
                             // If we're parsing META create a meta tag segment with the buffered content
@@ -145,10 +159,16 @@ class DefaultSegmentParser : SegmentParser
                             )
 
                             // If the parsing state is anything else, puke
-                            else -> throw SegmentParserException(
-                                message = "Invalid parsing state ($state) at index (${sourceIterator.index})"
-                            )
+                            else ->
+                            {
+                                val message = "Invalid parsing state ($state) at index (${sourceIterator.index})"
+                                logger.error(message)
+                                throw SegmentParserException(message)
+                            }
                         }
+
+                        // Log the segment
+                        logger.debug("Parsed segment, $segment")
 
                         // Emit the tag segment, skip the suffix, clear the buffer, and switch to TEXT
                         this.yield(segment)
@@ -204,7 +224,7 @@ class DefaultSegmentParser : SegmentParser
         // If the buffer still has remaining content
         if (contentBuilder.isNotEmpty())
         {
-            // Create and emit a raw segment of the remaining content
+            // Create a raw segment of the remaining content
             val segment = RawSegment(
                 content = contentBuilder.toString(),
                 location = DefaultLocation(
@@ -217,8 +237,16 @@ class DefaultSegmentParser : SegmentParser
                     untilColumnNumber = untilColumnNumber,
                 ),
             )
+
+            // Log the segment
+            logger.debug("Parsed segment, $segment")
+
+            // Emit the segment
             this.yield(segment)
         }
+
+        // End
+        logger.debug("Segment parsing complete")
     }
 
     private enum class State

@@ -9,10 +9,7 @@ import com.luggsoft.k4.core.segments.MetaTagSegment
 import com.luggsoft.k4.core.segments.RawSegment
 import com.luggsoft.k4.core.segments.Segment
 import com.luggsoft.k4.core.segments.TagSegmentBase
-import com.luggsoft.k4.core.segments.parsers.DefaultSegmentParser
-import com.luggsoft.k4.core.sources.StringSource
 import java.io.Reader
-import java.io.StringReader
 import java.io.StringWriter
 import java.io.Writer
 import javax.script.Invocable
@@ -21,10 +18,10 @@ import kotlin.reflect.KClass
 
 class DefaultTemplateWriter : TemplateWriter
 {
-    override fun <TModel : Any> writeTemplate(writer: Writer, segments: Iterable<Segment>, modelKClass: KClass<TModel>)
+    override fun <TModel : Any> writeTemplate(writer: Writer, segments: Iterable<Segment>)
     {
         StringWriter().use { innerWriter ->
-            this.writeTemplateHeader(innerWriter, modelKClass)
+            this.writeTemplateHeader(innerWriter, TODO())
             this.writeTemplateScript(innerWriter, segments)
             this.writeTemplateFooter(innerWriter)
             innerWriter.flush()
@@ -131,7 +128,7 @@ class ScriptTemplate<TModel : Any>(
             innerTemplate.render(writer, model)
         }
 
-        TODO();
+        writer.flush()
     }
 }
 
@@ -153,11 +150,14 @@ Thank you!
 
 fun main()
 {
+    /*
     val source = StringSource(
         name = "example",
         content = TEMPLATE_CONTENT,
     )
-    val segmentParser = DefaultSegmentParser()
+    val segmentParser = DefaultSegmentParser(
+        logger = LoggerFactory.getLogger("parser"),
+    )
     val segments = segmentParser.parseSegments(
         source = source,
     )
@@ -166,7 +166,6 @@ fun main()
     templateWriter.writeTemplate(
         writer = writer,
         segments = segments,
-        modelKClass = Coordinate::class,
     )
     writer.flush()
     val templateScript = writer.toString()
@@ -187,4 +186,5 @@ fun main()
         )
     )
     outputWriter.flush()
+    */
 }

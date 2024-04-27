@@ -6,6 +6,7 @@ abstract class SegmentBase : Segment
 {
     final override fun toString(): String = """(${this.typeName}@[${this.location}] "${this.content.kotlinEscape()}")"""
 
+    // TODO: remove and use this::class.simpleName instead
     private val typeName: String
         get() = when (this)
         {

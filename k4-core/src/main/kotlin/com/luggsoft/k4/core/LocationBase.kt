@@ -8,5 +8,5 @@ abstract class LocationBase : Location
     final override val untilCoordinate: String
         get() = "${this.source.name}:${this.untilLineNumber}:${this.untilColumnNumber}"
 
-    final override fun toString(): String = "${this.startCoordinate}/${this.untilCoordinate}/${this.startIndex}:${this.untilIndex}"
+    final override fun toString(): String = "${this.startCoordinate}/${this.untilCoordinate}"
 }
