@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/github/stars/dan-lugg/luggsoft-k4?style=for-the-badge" alt="Stars" />
     <img src="https://img.shields.io/github/license/dan-lugg/luggsoft-k4?style=for-the-badge" alt="License" />
     <img src="https://img.shields.io/github/v/release/dan-lugg/luggsoft-k4?style=for-the-badge" alt="Release" />
-    <img src="https://img.shields.io/github/actions/workflow/status/dan-lugg/luggsoft-k4/gradle-publish.yml?style=for-the-badge" alt="Status" />
+    <img src="https://img.shields.io/github/actions/workflow/status/dan-lugg/luggsoft-k4/gradle.yml?style=for-the-badge" alt="Status" />
 </p>
 
 ---
