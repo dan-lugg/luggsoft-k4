@@ -4,14 +4,14 @@
     <img src="/.github/assets/luggsoft-k4.png?raw=true" alt="luggsoft-k4" />
 </p>
 
----
-
 <p align="center">
     <img src="https://img.shields.io/github/stars/dan-lugg/luggsoft-k4?style=for-the-badge" alt="Stars" />
     <img src="https://img.shields.io/github/license/dan-lugg/luggsoft-k4?style=for-the-badge" alt="License" />
     <img src="https://img.shields.io/github/v/release/dan-lugg/luggsoft-k4?style=for-the-badge" alt="Release" />
     <img src="https://img.shields.io/github/actions/workflow/status/dan-lugg/luggsoft-k4/gradle-publish.yml?style=for-the-badge" alt="Status" />
 </p>
+
+---
 
 # K4, Kotlin T4 Text Transformations
 
