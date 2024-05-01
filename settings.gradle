@@ -21,7 +21,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ls-k4"
+rootProject.name = "luggsoft-k4"
 
 include(
     "k4-cli",
