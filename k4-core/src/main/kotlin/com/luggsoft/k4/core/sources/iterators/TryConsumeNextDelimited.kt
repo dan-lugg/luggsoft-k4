@@ -1,6 +1,4 @@
-package com.luggsoft.k4.core
-
-import com.luggsoft.k4.core.sources.SourceIterator
+package com.luggsoft.k4.core.sources.iterators
 
 fun SourceIterator.tryConsumeNextDelimited(delimiter: CharSequence, stringBuilder: StringBuilder): Boolean
 {

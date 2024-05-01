@@ -5,5 +5,5 @@ import java.io.Writer
 
 interface TemplateWriter
 {
-    fun writeTemplate(writer: Writer, segments: Iterable<Segment>)
+    fun <TModel : Any> writeTemplate(writer: Writer, segments: Iterable<Segment>)
 }

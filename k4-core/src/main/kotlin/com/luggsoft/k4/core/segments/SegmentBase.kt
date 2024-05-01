@@ -4,7 +4,17 @@ import com.luggsoft.common.text.kotlinEscape
 
 abstract class SegmentBase : Segment
 {
-    protected abstract val typeName: String
+    final override fun toString(): String = """(${this.typeName}@[${this.location}] "${this.content.kotlinEscape()}")"""
 
-    final override fun toString(): String = "(${this.typeName}@${this.location}: ${this.content.kotlinEscape()})"
+    // TODO: remove and use this::class.simpleName instead
+    private val typeName: String
+        get() = when (this)
+        {
+            is RawSegment -> "TEXT"
+            is CodeTagSegment -> "CODE"
+            is EchoTagSegment -> "ECHO"
+            is MetaTagSegment -> "META"
+            else -> "TODO"
+        }
+
 }

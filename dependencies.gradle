@@ -1,20 +1,20 @@
 static def buildLibraries(Map<String, Object> libraryVersionMapping) {
+    //noinspection GroovyAssignabilityCheck
     return libraryVersionMapping
         .collect { entry -> entry.value == null ? null : "${entry.key}:${entry.value}" }
         .findAll { library -> library != null }
-        .each { library -> println("lib -> $library") }
 }
 
 ext.versions = [
-    "betterParse"   : "0.4.2",
-    "jackson"       : "2.12.3",
+    "betterParse"   : "0.4.4",
+    "jackson"       : "2.13.3",
     "junitJupiter"  : "5.7.0",
-    "kotlin"        : "1.5.21",
-    "ktCommon"      : "1.1.1",
+    "kotlin"        : "1.6.21",
+    "ktCommon"      : "1.1.2",
     "logbackClassic": "1.2.3",
-    "picocli"       : "4.6.1",
-    "reflections"   : "0.9.11",
-    "spring"        : "5.3.9",
+    "picocli"       : "4.6.3",
+    "reflections"   : "0.10.2",
+    "spring"        : "5.3.20",
 ]
 
 ext.libraries = buildLibraries([

@@ -1,11 +1,21 @@
-![K4, T4 for Kotlin][img-header]
+<!--suppress HtmlDeprecatedAttribute -->
 
-# K4, T4 for Kotlin
+<p align="center">
+    <img src="/.github/assets/ls-k4-banner.png?raw=true" alt="ls-k4" />
+</p>
 
-[![Gradle Package][img-actions]][www-actions]
-[![License][img-license]][www-license]
+---
 
-Welcome to **K4**, a from-scratch template engine inspired by .NET's [T4 (Text Template Transformation Toolkit)](https://github.com/mono/t4) engine.
+<p align="center">
+    <img src="https://img.shields.io/github/stars/dan-lugg/ls-k4?style=for-the-badge" alt="Stars" />
+    <img src="https://img.shields.io/github/license/dan-lugg/ls-k4?style=for-the-badge" alt="License" />
+    <img src="https://img.shields.io/github/v/release/dan-lugg/ls-k4?style=for-the-badge" alt="Release" />
+    <img src="https://img.shields.io/github/actions/workflow/status/dan-lugg/ls-k4/gradle-publish.yml?style=for-the-badge" alt="Status" />
+</p>
+
+# K4, Kotlin T4 Text Transformations
+
+Welcome to **K4**, a from-scratch template engine inspired by [.NET's T4 (Text Template Transformation Toolkit)](https://github.com/mono/t4) engine.
 
 ## Syntax
 
@@ -56,14 +66,4 @@ TODO
 
 ## License
 
-The MIT License (MIT). Please see the package [license file][www-license] for more information.
-
-[img-header]: assets/header.jpg
-
-[www-license]: LICENSE.md
-
-[img-license]: https://img.shields.io/badge/license-MIT-blue.svg
-
-[img-actions]: https://github.com/dan-lugg/kt-k4/actions/workflows/gradle-publish.yml/badge.svg
-
-[www-actions]: https://github.com/dan-lugg/kt-k4/actions/workflows/gradle-publish.yml
+The MIT License (MIT). Please see the package [license file](./LICENSE) for more information.

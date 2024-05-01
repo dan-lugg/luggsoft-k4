@@ -1,4 +1,4 @@
-package com.luggsoft.k4.core.sources
+package com.luggsoft.k4.core.sources.iterators
 
 class DefaultSourceIterator(
     private val charIterator: Iterator<Char>,
